@@ -1,0 +1,198 @@
+//file system saving path
+'book_cover' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/images/partner/background_cover_page'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+
+        
+
+         'pdf_coverpage' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/pdf/coverpage'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+==========================================================
+// onchange ajax call
+@section('js')
+<script src="https://cdn.ckeditor.com/4.14.1/standard/ckeditor.js"></script>
+
+<script type="text/javascript">
+    //editer 
+     CKEDITOR.replace('description');
+     //end editer
+    
+     /*remove alert message */
+    function resetAll() {
+        $('.alerts').empty(); // Removing alerts message after x sec
+    }
+
+    $(document).ready(function() {
+      $(".btn-info").click(function(){ 
+          var lsthmtl = $(".clone").html();
+          $(".increment").after(lsthmtl);
+      });
+      $("body").on("click",".btn-danger",function(){ 
+          $(this).parents(".cust-hdtuto").remove();
+      });
+    });
+
+    //get BookSubCategories of selected industry 
+    function getBookSubCategories(){
+        var cat_col;
+        var final_cat_col;
+        var category_id= $('#book_cat_id').val();
+        $.ajax({
+            url: "{{url('get-subcat')}}",
+            type: "GET",
+            data: {
+                'id': category_id,
+                
+            },
+            dataType: "json",
+            cache: false,
+            success: function(data) {
+                if (data.length > 0){                  
+                    $.each(data, function(k, l) {                          
+                        cat_col += '<option value="' + l.id + '">' + l.category_name + '</option>';
+                    });                    
+                     if (cat_col){
+                         final_cat_col = cat_col.replace("undefined", "");
+                    }
+                     $('#book_sub_cat_id').replaceWith('<select class="w-100 py-1 px-3 cust-title" id="book_sub_cat_id" name="book_sub_cat_id" ><option selected disabled>Select Sub Category</option>'+final_cat_col +'</select>');                
+                } else {
+                    $('#book_sub_cat_id').replaceWith('<select class="w-100 py-1 px-3 cust-title"  id="book_sub_cat_id" name="book_sub_cat_id" ><option  selected disabled>Select Sub Category</option disabled><option >Sub category not found!</option></select>');
+                }
+            }
+        });
+    }
+
+    //get centers of selected industry 
+    function getCenters(){
+        var center_col =[];
+        var final_center_col;
+        $.ajax({
+            url: "{{ url('get-centers')}}",
+            type: "get",
+            data: {
+                'industry_id': $('#industry_id').val(),
+            },
+            dataType: "json",
+            cache: false,
+            success: function (result){
+                if (result.data==1) {
+                    $.each(result.centers, function (k, l) {
+                        center_col += '<option value="' + l.id + '">' + l.full_name +'</option>'
+                    });
+
+                    $('#center_id').empty();
+                    $('#center_id').append('<option disabled selected >Select Centers..</option>' + center_col);
+
+                }else{
+                    alert(result.error);
+                }
+
+            }
+        });
+
+   } 
+    //get classes of the school
+    function getDepartment() {
+        var department_col =[];
+        var final_department_col;
+        $.ajax({
+            url: "{{ url('get-department')}}",
+            type: "get",
+            data: {
+                'center_id': $('#center_id').val(),
+            },
+            dataType: "json",
+            cache: false,
+            success: function (result) {
+                if (result.data==1) {
+                    $.each(result.departments, function (k, l) {
+                        department_col +=  '<option value="' + l.id + '">' + l.name +'</option>'
+                    });
+               
+                
+                    $('#department_id').empty();
+                    $('#department_id').append('<option value="0" >Select Department..</option>' + department_col);
+                }else{
+                    alert(result.error);
+                }
+            }
+
+        });
+
+    }
+
+    //get batches of departmnets
+    function getBatches() {
+        var batch_col =[];
+        var final_batch_col;
+        $.ajax({
+            url: "{{ url('get-batches')}}",
+            type: "get",
+            data: {
+                'department_id': $('#department_id').val(),
+            },
+            dataType: "json",
+            cache: false,
+            success: function (result) {
+                console.log(result);
+                if (result.data==1) {
+                    $.each(result.batches, function (k, l) {
+                        batch_col +=  '<option value="' + l.id + '">' + l.name +'</option>'
+                    });                
+                    $('#batch_id').empty();
+                    $('#batch_id').append('<option value="0" >Select Batch..</option>' + batch_col);
+                }else{
+                    alert(result.error);
+                }
+            }
+        });
+    }
+   
+</script>
+
+@endsection
+===================================================================
+//search blade
+<div class="col-12 mt-3 "> 
+                <form action="{{'ind-stories'}}" enctype="multipart/form-data" method="GET" class="row" >
+                    <div class="col-12">
+                        <p class="m-0 cust-color-blue">* Please select parameter to search Stories .</p>
+                    </div>                    
+                    <div class="col-xs-6 col-sm-4 mt-2">
+                        <select name="book_cat_id" id="book_cat_id" class="form-control input-circle cust-grey-border-col" required onchange="getBookSubCategories();">
+                        <option selected disabled >All</option>
+                        @forelse($bookCategories as $bookCategory)                      
+                            <option value="{{$bookCategory->id}}" {{$book_cat_id == $bookCategory->id ? 'selected' : '' }} > {{$bookCategory['category_name']}}</option>
+         
+                        @empty
+                            <option value="0">Data not found..</option>
+                        @endforelse
+                        </select>
+                    </div>
+                    <div class="col-xs-6 col-sm-4 mt-2" >
+                        <select name="book_sub_cat_id" id="book_sub_cat_id" class="form-control input-circle cust-grey-border-col" required >
+                         <option selected disabled >All</option>
+                        @forelse($bookSubCategories as $bookSubCategory)                          
+                            <option value="{{$bookSubCategory->id}}" {{$book_sub_cat_id == $bookSubCategory->id ? 'selected' : '' }}> {{$bookSubCategory['category_name']}}</option>
+         
+                        @empty
+                            <option value="0">Data not found..</option>
+                        @endforelse
+                        
+                        </select>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 mt-2" style="display:inline-flex;" >
+                        <input type="text" name="name" id="name" placeholder="Enter name" class="form-control input-circle cust-grey-border-col"  value="{{$name}}"></input>
+                        <button type="submit" class="btn btn-primary mx-2" style="height:33px;">Search</button> 
+                    </div>
+
+                    
+                </form>
+            </div>
