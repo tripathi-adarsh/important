@@ -1,0 +1,103 @@
+git = software
+github = website
+.md = mark down
+commit = changes
+repository = folder
+~ = root directory
+cd = change directory
+cd.. = go to back of directory
+ls = used for listing
+ls -a = hidden files show and other file show
+clear = clear the terminal
+pwd = presend working directory
+untarcted = untracked file
+modified = changed
+stage = file is ready to commited (after add)
+unmodified = unchanged (after commit)
+init = init is used for create a new git repository
+
+configuration github
+	git config --global user.name "myname"
+	git config --global user.email "emailaddr"
+	git config --list 
+
+clone(duplicate) = cloning repositories to our local machine  (git clone <project link>)
+status = display the state of code(git status)
+
+after modify 
+	add -> commit -> push
+
+add 
+	add new file (git add <filename>)
+	for all file adding (git add .)
+	
+commit 
+	git commit -m "some message"
+	
+push 
+	//upload local repository to remote repository.
+	git push origin main
+pull
+	//if change on github project then pull changes on local
+	git pull origin <brancname>
+===========================================================	
+//this is for github to local and update on local reflect on github
+	1.git clone <project link>
+	2.go to folder directory of project on terminal and change on the project
+	3.git status
+	4.git add .
+	5.git commit -m "some message"
+	6.git push origin main
+===============================================================
+//this is for local to github and update on local reflect on github
+ git init 
+ git status
+ git add .
+ git commit -m "message"
+ git remote add origin <link of git project>
+ git remote -v = for varify remote
+ git branch = to check branch
+ git branch -m <branchname> = to remote branch
+ git push origin <branchname>
+ 
+============================================
+//after changes on local 
+	git add .
+	git commit -m "some message"
+	git push origin <branchname>
+=========================
+//local flow 
+github repositories -> clone -> changes -> add -> commit -> push
+==============================
+//branches
+git branch(check branch)
+git branch -m main (change branch name)
+git checkout branchname (check branch)
+git branch (check all brances)
+git checkout -b newbranchname  (to create new branch)
+git branch -d branchname (to delete branch)
+===========================================
+//merge changes one branch to other on github
+	git diff <branchname> = to compare commit ,files , branches and all 
+	git merge <branchname> = to merger 2 branches
+	............ OR ............
+	create A PR(pull request)
+	
+//merge changes one branch to other on local
+	git pull origin <brancname>
+===================================
+//merge conflict
+
+===================================
+//undoing changes
+	case 1 : staged changes
+		git reset <filename>
+		git reset
+	case 2 : commit changes(for one commit)
+			git reset HEAD~1
+	case 3 : commit changes(for multiple commit)
+			git reset <commit hash>
+			git reset --hard <commit hash>
+=========================================
+//fork
+	fork is rough copy
